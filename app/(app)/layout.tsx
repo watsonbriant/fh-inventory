@@ -1,9 +1,12 @@
 import { AppSidebar } from "@/components/app-sidebar"
-import { AddItemForm } from "@/components/inventory/add-item-form"
-import { SiteHeader } from "@/components/site-header"
+import { PageTransition } from "@/components/page-transition"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 
-export default function AddItemPage() {
+export default function AppLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
   return (
     <SidebarProvider
       style={
@@ -15,10 +18,7 @@ export default function AddItemPage() {
     >
       <AppSidebar variant="inset" />
       <SidebarInset>
-        <SiteHeader title="Add Item" href="/add" />
-        <div className="flex flex-1 flex-col py-4 md:py-6">
-          <AddItemForm />
-        </div>
+        <PageTransition>{children}</PageTransition>
       </SidebarInset>
     </SidebarProvider>
   )
