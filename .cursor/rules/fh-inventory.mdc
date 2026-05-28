@@ -1,0 +1,23 @@
+---
+description: FH Inventory project standards for UI, components, and responsive design
+alwaysApply: true
+---
+
+# FH Inventory Project Rules
+
+## Components
+
+- Use **shadcn/ui** for all UI components. Add components via the shadcn CLI rather than building from scratch.
+- **No single component file may exceed 400 lines.** Refactor into smaller components proactively — do not wait to be asked.
+
+## Interaction & Visual Design
+
+- Buttons and images must have a subtle **raise + drop shadow on hover**. Use the `.hover-lift` utility in `app/globals.css`.
+
+## Responsive Design (Mobile-First)
+
+- **Design mobile-first.** This app will be used predominantly on phones; desktop is secondary.
+- Every screen must work well on small viewports before enhancing for larger breakpoints.
+- Use touch-friendly targets (min ~44px tap area), readable text without zoom, and layouts that stack vertically on mobile.
+- Prefer single-column layouts on mobile; use `sm:` / `md:` breakpoints only to add desktop enhancements.
+- Test mentally (and in browser when possible) at ~375px width before considering a feature done.
