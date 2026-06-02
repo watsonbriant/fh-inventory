@@ -32,6 +32,8 @@ export async function updateInvItem({
     item: input.item.trim(),
     description: input.description?.trim() || null,
     location: input.location,
+    room: input.room?.trim() || null,
+    owner: input.owner,
     quantity: input.quantity,
     notes: input.notes?.trim() || null,
     ...(image !== undefined ? { image } : {}),

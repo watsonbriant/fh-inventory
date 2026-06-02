@@ -9,6 +9,9 @@ import {
   RequiredFieldLabel,
   validateInvItemForm,
 } from "@/components/inventory/inv-item-form-utils"
+import { InvItemNotesField } from "@/components/inventory/inv-item-notes-field"
+import { LocationRoomFields } from "@/components/inventory/location-room-fields"
+import { OwnerSelect } from "@/components/inventory/owner-select"
 import { QuantityStepper } from "@/components/inventory/quantity-stepper"
 import { Button } from "@/components/ui/button"
 import {
@@ -21,18 +24,8 @@ import {
   FieldSet,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import {
-  INVENTORY_LOCATIONS,
-  type InventoryLocation,
-} from "@/lib/inventory/constants"
+import type { InventoryLocation, InventoryOwner } from "@/lib/inventory/constants"
 import { createInvItem } from "@/lib/inventory/create-inv-item"
 import type { FormErrors } from "@/lib/types/inv-item"
 
@@ -41,6 +34,8 @@ export function AddItemForm() {
   const [item, setItem] = React.useState("")
   const [description, setDescription] = React.useState("")
   const [location, setLocation] = React.useState<InventoryLocation | "">("")
+  const [room, setRoom] = React.useState("")
+  const [owner, setOwner] = React.useState<InventoryOwner | "">("")
   const [quantity, setQuantity] = React.useState(1)
   const [notes, setNotes] = React.useState("")
   const [imageFile, setImageFile] = React.useState<File | null>(null)
@@ -48,7 +43,13 @@ export function AddItemForm() {
   const [isSubmitting, setIsSubmitting] = React.useState(false)
 
   function validateForm() {
-    const nextErrors = validateInvItemForm({ item, location, quantity })
+    const nextErrors = validateInvItemForm({
+      item,
+      location,
+      owner,
+      quantity,
+      notes,
+    })
     setErrors(nextErrors)
     return Object.keys(nextErrors).length === 0
   }
@@ -56,7 +57,7 @@ export function AddItemForm() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    if (!validateForm() || !location) {
+    if (!validateForm() || !location || !owner) {
       return
     }
 
@@ -68,6 +69,8 @@ export function AddItemForm() {
           item,
           description,
           location,
+          room,
+          owner,
           quantity,
           notes,
         },
@@ -119,35 +122,22 @@ export function AddItemForm() {
             />
           </Field>
 
-          <Field data-invalid={!!errors.location}>
-            <RequiredFieldLabel htmlFor="location">
-              Location
-            </RequiredFieldLabel>
-            <Select
-              value={location}
-              onValueChange={(value) =>
-                setLocation(value as InventoryLocation)
-              }
-            >
-              <SelectTrigger
-                id="location"
-                className="w-full text-sm"
-                aria-invalid={!!errors.location}
-              >
-                <SelectValue placeholder="Select a storage location" />
-              </SelectTrigger>
-              <SelectContent>
-                {INVENTORY_LOCATIONS.map((campus) => (
-                  <SelectItem key={campus} value={campus}>
-                    {campus}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.location ? (
-              <FieldError>{errors.location}</FieldError>
-            ) : null}
-          </Field>
+          <LocationRoomFields
+            locationId="location"
+            roomId="room"
+            location={location}
+            room={room}
+            onLocationChange={setLocation}
+            onRoomChange={setRoom}
+            errors={errors}
+          />
+
+          <OwnerSelect
+            id="owner"
+            value={owner}
+            onValueChange={setOwner}
+            errors={errors}
+          />
 
           <Field>
             <FieldLabel htmlFor="image">Image</FieldLabel>
@@ -164,17 +154,13 @@ export function AddItemForm() {
             ) : null}
           </Field>
 
-          <Field>
-            <FieldLabel htmlFor="notes">Notes</FieldLabel>
-            <Textarea
-              id="notes"
-              value={notes}
-              onChange={(event) => setNotes(event.target.value)}
-              placeholder="Anything else notable about this item?"
-              className="text-sm"
-              rows={4}
-            />
-          </Field>
+          <InvItemNotesField
+            id="notes"
+            value={notes}
+            onChange={setNotes}
+            owner={owner}
+            errors={errors}
+          />
         </FieldGroup>
       </FieldSet>
 

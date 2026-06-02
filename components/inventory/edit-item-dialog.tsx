@@ -9,6 +9,9 @@ import {
   RequiredFieldLabel,
   validateInvItemForm,
 } from "@/components/inventory/inv-item-form-utils"
+import { InvItemNotesField } from "@/components/inventory/inv-item-notes-field"
+import { LocationRoomFields } from "@/components/inventory/location-room-fields"
+import { OwnerSelect } from "@/components/inventory/owner-select"
 import { QuantityStepper } from "@/components/inventory/quantity-stepper"
 import {
   AlertDialog,
@@ -37,18 +40,8 @@ import {
   FieldSet,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import {
-  INVENTORY_LOCATIONS,
-  type InventoryLocation,
-} from "@/lib/inventory/constants"
+import type { InventoryLocation, InventoryOwner } from "@/lib/inventory/constants"
 import { deleteInvItem, updateInvItem } from "@/lib/inventory/update-inv-item"
 import type { FormErrors, InvItem } from "@/lib/types/inv-item"
 
@@ -67,6 +60,8 @@ export function EditItemDialog({
   const [itemName, setItemName] = React.useState("")
   const [description, setDescription] = React.useState("")
   const [location, setLocation] = React.useState<InventoryLocation | "">("")
+  const [room, setRoom] = React.useState("")
+  const [owner, setOwner] = React.useState<InventoryOwner | "">("")
   const [quantity, setQuantity] = React.useState(1)
   const [notes, setNotes] = React.useState("")
   const [imageFile, setImageFile] = React.useState<File | null>(null)
@@ -84,6 +79,8 @@ export function EditItemDialog({
     setItemName(item.item)
     setDescription(item.description ?? "")
     setLocation(item.location as InventoryLocation)
+    setRoom(item.room ?? "")
+    setOwner(item.owner as InventoryOwner)
     setQuantity(item.quantity)
     setNotes(item.notes ?? "")
     setImageFile(null)
@@ -95,7 +92,9 @@ export function EditItemDialog({
     const nextErrors = validateInvItemForm({
       item: itemName,
       location,
+      owner,
       quantity,
+      notes,
     })
     setErrors(nextErrors)
     return Object.keys(nextErrors).length === 0
@@ -104,7 +103,7 @@ export function EditItemDialog({
   async function handleSave(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    if (!item || !validateForm() || !location) {
+    if (!item || !validateForm() || !location || !owner) {
       return
     }
 
@@ -117,6 +116,8 @@ export function EditItemDialog({
           item: itemName,
           description,
           location,
+          room,
+          owner,
           quantity,
           notes,
         },
@@ -200,35 +201,22 @@ export function EditItemDialog({
                   />
                 </Field>
 
-                <Field data-invalid={!!errors.location}>
-                  <RequiredFieldLabel htmlFor="edit-location">
-                    Location
-                  </RequiredFieldLabel>
-                  <Select
-                    value={location}
-                    onValueChange={(value) =>
-                      setLocation(value as InventoryLocation)
-                    }
-                  >
-                    <SelectTrigger
-                      id="edit-location"
-                      className="w-full text-sm"
-                      aria-invalid={!!errors.location}
-                    >
-                      <SelectValue placeholder="Select a storage location" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {INVENTORY_LOCATIONS.map((campus) => (
-                        <SelectItem key={campus} value={campus}>
-                          {campus}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.location ? (
-                    <FieldError>{errors.location}</FieldError>
-                  ) : null}
-                </Field>
+                <LocationRoomFields
+                  locationId="edit-location"
+                  roomId="edit-room"
+                  location={location}
+                  room={room}
+                  onLocationChange={setLocation}
+                  onRoomChange={setRoom}
+                  errors={errors}
+                />
+
+                <OwnerSelect
+                  id="edit-owner"
+                  value={owner}
+                  onValueChange={setOwner}
+                  errors={errors}
+                />
 
                 <Field>
                   <FieldLabel htmlFor="edit-image">Image</FieldLabel>
@@ -251,16 +239,13 @@ export function EditItemDialog({
                   ) : null}
                 </Field>
 
-                <Field>
-                  <FieldLabel htmlFor="edit-notes">Notes</FieldLabel>
-                  <Textarea
-                    id="edit-notes"
-                    value={notes}
-                    onChange={(event) => setNotes(event.target.value)}
-                    className="text-sm"
-                    rows={4}
-                  />
-                </Field>
+                <InvItemNotesField
+                  id="edit-notes"
+                  value={notes}
+                  onChange={setNotes}
+                  owner={owner}
+                  errors={errors}
+                />
               </FieldGroup>
             </FieldSet>
 

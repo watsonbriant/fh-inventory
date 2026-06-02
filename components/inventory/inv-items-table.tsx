@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { ListFilterIcon } from "lucide-react"
 import {
   flexRender,
   getCoreRowModel,
@@ -13,9 +14,20 @@ import {
 } from "@tanstack/react-table"
 
 import { EditItemDialog } from "@/components/inventory/edit-item-dialog"
+import { InvItemsActiveFilters } from "@/components/inventory/inv-items-active-filters"
+import { InvItemsFilterDialog } from "@/components/inventory/inv-items-filter-dialog"
 import { invItemsColumns } from "@/components/inventory/inv-items-columns"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+  EMPTY_INV_ITEM_FILTERS,
+  getUniqueRoomsFromItems,
+  hasActiveInvItemFilters,
+  matchesInvItemFilters,
+  removeFilterValue,
+  type InvItemFilterField,
+  type InvItemFilters,
+} from "@/lib/inventory/inv-item-filters"
 import {
   Table,
   TableBody,
@@ -43,11 +55,21 @@ export function InvItemsTable({ data }: { data: InvItem[] }) {
     { id: "item", desc: false },
   ])
   const [globalFilter, setGlobalFilter] = React.useState("")
+  const [appliedFilters, setAppliedFilters] =
+    React.useState<InvItemFilters>(EMPTY_INV_ITEM_FILTERS)
+  const [filterDialogOpen, setFilterDialogOpen] = React.useState(false)
   const [selectedItem, setSelectedItem] = React.useState<InvItem | null>(null)
   const [dialogOpen, setDialogOpen] = React.useState(false)
 
+  const roomOptions = React.useMemo(() => getUniqueRoomsFromItems(data), [data])
+
+  const facetFilteredData = React.useMemo(
+    () => data.filter((item) => matchesInvItemFilters(item, appliedFilters)),
+    [data, appliedFilters],
+  )
+
   const table = useReactTable({
-    data,
+    data: facetFilteredData,
     columns: invItemsColumns,
     state: {
       sorting,
@@ -81,15 +103,33 @@ export function InvItemsTable({ data }: { data: InvItem[] }) {
     }
   }
 
+  function handleRemoveFilter(field: InvItemFilterField, value: string) {
+    setAppliedFilters((current) => removeFilterValue(current, field, value))
+  }
+
+  const filtersActive = hasActiveInvItemFilters(appliedFilters)
+
   return (
     <div className="flex w-full flex-col gap-4">
       <div className="flex flex-col gap-3 px-4 md:flex-row md:items-center md:justify-between lg:px-6">
-        <Input
-          placeholder="Search items..."
-          value={globalFilter}
-          onChange={(event) => setGlobalFilter(event.target.value)}
-          className="w-full text-sm md:max-w-sm"
-        />
+        <div className="flex w-full gap-2 md:max-w-sm">
+          <Input
+            placeholder="Search items..."
+            value={globalFilter}
+            onChange={(event) => setGlobalFilter(event.target.value)}
+            className="w-full text-sm"
+          />
+          <Button
+            type="button"
+            variant={filtersActive ? "default" : "outline"}
+            size="icon"
+            className="hover-lift shrink-0"
+            aria-label="Filter items"
+            onClick={() => setFilterDialogOpen(true)}
+          >
+            <ListFilterIcon className="size-4" />
+          </Button>
+        </div>
         <div className="flex items-center justify-between gap-3 md:shrink-0">
           <p className="text-sm text-muted-foreground md:ml-auto">
             {table.getFilteredRowModel().rows.length} item
@@ -104,6 +144,20 @@ export function InvItemsTable({ data }: { data: InvItem[] }) {
           </Button>
         </div>
       </div>
+
+      <InvItemsActiveFilters
+        filters={appliedFilters}
+        onRemove={handleRemoveFilter}
+        onClearAll={() => setAppliedFilters(EMPTY_INV_ITEM_FILTERS)}
+      />
+
+      <InvItemsFilterDialog
+        open={filterDialogOpen}
+        onOpenChange={setFilterDialogOpen}
+        appliedFilters={appliedFilters}
+        onApply={setAppliedFilters}
+        roomOptions={roomOptions}
+      />
 
       <div className="mx-4 overflow-x-auto rounded-lg border lg:mx-6">
         <Table className="min-w-max">

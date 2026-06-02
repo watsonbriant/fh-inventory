@@ -76,6 +76,18 @@ export const invItemsColumns: ColumnDef<InvItem>[] = [
     cell: ({ row }) => formatCellValue(row.getValue("location")),
   },
   {
+    accessorKey: "room",
+    header: "Room",
+    cell: ({ row }) => formatCellValue(row.getValue("room") as string | null),
+  },
+  {
+    accessorKey: "owner",
+    header: "Owner",
+    cell: ({ row }) => (
+      <div className="min-w-[100px]">{row.getValue("owner")}</div>
+    ),
+  },
+  {
     accessorKey: "description",
     header: () => (
       <div className={fieldColumnClassName}>Description</div>
