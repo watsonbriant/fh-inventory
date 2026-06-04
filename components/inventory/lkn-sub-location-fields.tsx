@@ -52,9 +52,8 @@ export function LknSubLocationFields({
           id={shelfId}
           value={shelf}
           onChange={(event) => onShelfChange(event.target.value)}
-          placeholder="#"
+          placeholder="A4"
           className="text-sm"
-          inputMode="numeric"
         />
       </Field>
     </div>
