@@ -55,6 +55,10 @@ export const INVENTORY_LOCATIONS: InventoryLocation[] =
 export const INVENTORY_OWNER_OTHER = "Other" as const
 
 export const INVENTORY_OWNERS = [
+  "Production",
+  "Worship",
+  "SALT",
+  "Coffee Shoppe",
   "Facilities",
   "Creative",
   "Marketing",
