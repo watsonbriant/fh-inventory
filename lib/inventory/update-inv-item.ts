@@ -1,3 +1,7 @@
+import {
+  isLakeNormanLocation,
+  subLocationToDb,
+} from "@/lib/inventory/constants"
 import { createSupabaseBrowserClient } from "@/lib/supabase/client"
 import {
   deleteInventoryItemImages,
@@ -33,6 +37,12 @@ export async function updateInvItem({
     description: input.description?.trim() || null,
     location: input.location,
     room: input.room?.trim() || null,
+    sub_location: isLakeNormanLocation(input.location)
+      ? subLocationToDb(input.sub_location ?? "")
+      : null,
+    shelf: isLakeNormanLocation(input.location)
+      ? input.shelf?.trim() || null
+      : null,
     owner: input.owner,
     quantity: input.quantity,
     notes: input.notes?.trim() || null,

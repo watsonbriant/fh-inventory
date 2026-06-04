@@ -25,7 +25,11 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import type { InventoryLocation, InventoryOwner } from "@/lib/inventory/constants"
+import {
+  LKN_SUB_LOCATION_NA,
+  type InventoryLocation,
+  type InventoryOwner,
+} from "@/lib/inventory/constants"
 import { createInvItem } from "@/lib/inventory/create-inv-item"
 import type { FormErrors } from "@/lib/types/inv-item"
 
@@ -35,6 +39,8 @@ export function AddItemForm() {
   const [description, setDescription] = React.useState("")
   const [location, setLocation] = React.useState<InventoryLocation | "">("")
   const [room, setRoom] = React.useState("")
+  const [subLocation, setSubLocation] = React.useState<string>(LKN_SUB_LOCATION_NA)
+  const [shelf, setShelf] = React.useState("")
   const [owner, setOwner] = React.useState<InventoryOwner | "">("")
   const [quantity, setQuantity] = React.useState(1)
   const [notes, setNotes] = React.useState("")
@@ -70,6 +76,8 @@ export function AddItemForm() {
           description,
           location,
           room,
+          sub_location: subLocation,
+          shelf,
           owner,
           quantity,
           notes,
@@ -125,10 +133,16 @@ export function AddItemForm() {
           <LocationRoomFields
             locationId="location"
             roomId="room"
+            subLocationId="sub-location"
+            shelfId="shelf"
             location={location}
             room={room}
+            subLocation={subLocation}
+            shelf={shelf}
             onLocationChange={setLocation}
             onRoomChange={setRoom}
+            onSubLocationChange={setSubLocation}
+            onShelfChange={setShelf}
             errors={errors}
           />
 

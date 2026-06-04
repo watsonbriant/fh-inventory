@@ -28,7 +28,10 @@ export function LocationSelect({
   className,
 }: LocationSelectProps) {
   return (
-    <Select value={value} onValueChange={onValueChange}>
+    <Select
+      value={value || undefined}
+      onValueChange={onValueChange}
+    >
       <SelectTrigger
         id={id}
         className={cn("w-full text-sm", className)}

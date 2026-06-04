@@ -28,7 +28,10 @@ export function OwnerSelect({
   return (
     <Field data-invalid={!!errors?.owner}>
       <RequiredFieldLabel htmlFor={id}>Owner</RequiredFieldLabel>
-      <Select value={value} onValueChange={(v) => onValueChange(v as InventoryOwner)}>
+      <Select
+        value={value || undefined}
+        onValueChange={(v) => onValueChange(v as InventoryOwner)}
+      >
         <SelectTrigger
           id={id}
           className="w-full text-sm"

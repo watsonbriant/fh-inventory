@@ -1,4 +1,8 @@
-import type { InventoryLocation } from "@/lib/inventory/constants"
+import {
+  isLakeNormanLocation,
+  subLocationToDb,
+  type InventoryLocation,
+} from "@/lib/inventory/constants"
 import { createSupabaseBrowserClient } from "@/lib/supabase/client"
 import { uploadInventoryItemImage } from "@/lib/inventory/item-image"
 import type { InvItemInput } from "@/lib/types/inv-item"
@@ -16,6 +20,12 @@ export async function createInvItem(
       description: input.description?.trim() || null,
       location: input.location,
       room: input.room?.trim() || null,
+      sub_location: isLakeNormanLocation(input.location)
+        ? subLocationToDb(input.sub_location ?? "")
+        : null,
+      shelf: isLakeNormanLocation(input.location)
+        ? input.shelf?.trim() || null
+        : null,
       owner: input.owner,
       quantity: input.quantity,
       notes: input.notes?.trim() || null,

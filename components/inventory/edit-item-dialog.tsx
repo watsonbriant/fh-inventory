@@ -41,7 +41,12 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import type { InventoryLocation, InventoryOwner } from "@/lib/inventory/constants"
+import {
+  LKN_SUB_LOCATION_NA,
+  subLocationFromDb,
+  type InventoryLocation,
+  type InventoryOwner,
+} from "@/lib/inventory/constants"
 import { deleteInvItem, updateInvItem } from "@/lib/inventory/update-inv-item"
 import type { FormErrors, InvItem } from "@/lib/types/inv-item"
 
@@ -61,6 +66,8 @@ export function EditItemDialog({
   const [description, setDescription] = React.useState("")
   const [location, setLocation] = React.useState<InventoryLocation | "">("")
   const [room, setRoom] = React.useState("")
+  const [subLocation, setSubLocation] = React.useState<string>(LKN_SUB_LOCATION_NA)
+  const [shelf, setShelf] = React.useState("")
   const [owner, setOwner] = React.useState<InventoryOwner | "">("")
   const [quantity, setQuantity] = React.useState(1)
   const [notes, setNotes] = React.useState("")
@@ -80,6 +87,8 @@ export function EditItemDialog({
     setDescription(item.description ?? "")
     setLocation(item.location as InventoryLocation)
     setRoom(item.room ?? "")
+    setSubLocation(subLocationFromDb(item.sub_location))
+    setShelf(item.shelf ?? "")
     setOwner(item.owner as InventoryOwner)
     setQuantity(item.quantity)
     setNotes(item.notes ?? "")
@@ -117,6 +126,8 @@ export function EditItemDialog({
           description,
           location,
           room,
+          sub_location: subLocation,
+          shelf,
           owner,
           quantity,
           notes,
@@ -204,10 +215,16 @@ export function EditItemDialog({
                 <LocationRoomFields
                   locationId="edit-location"
                   roomId="edit-room"
+                  subLocationId="edit-sub-location"
+                  shelfId="edit-shelf"
                   location={location}
                   room={room}
+                  subLocation={subLocation}
+                  shelf={shelf}
                   onLocationChange={setLocation}
                   onRoomChange={setRoom}
+                  onSubLocationChange={setSubLocation}
+                  onShelfChange={setShelf}
                   errors={errors}
                 />
 

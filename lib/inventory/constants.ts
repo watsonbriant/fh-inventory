@@ -17,6 +17,38 @@ export const INVENTORY_LOCATION_GROUPS = [
 export type InventoryLocation =
   (typeof INVENTORY_LOCATION_GROUPS)[number]["options"][number]
 
+export const LAKE_NORMAN_CAMPUS = "Lake Norman Campus" as const
+
+export const LKN_SUB_LOCATION_NA = "N/A" as const
+
+export const LKN_SUB_LOCATIONS = [
+  LKN_SUB_LOCATION_NA,
+  "LKN Storage 1",
+  "LKN Storage 2",
+  "LKN Woodworking Shop",
+] as const
+
+export type LknSubLocation = (typeof LKN_SUB_LOCATIONS)[number]
+
+export function isLakeNormanLocation(location: string) {
+  return location === LAKE_NORMAN_CAMPUS
+}
+
+export function subLocationToDb(value: string) {
+  const trimmed = value.trim()
+  if (!trimmed || trimmed === LKN_SUB_LOCATION_NA) {
+    return null
+  }
+  return trimmed
+}
+
+export function subLocationFromDb(value: string | null | undefined) {
+  if (!value) {
+    return LKN_SUB_LOCATION_NA
+  }
+  return value as LknSubLocation
+}
+
 export const INVENTORY_LOCATIONS: InventoryLocation[] =
   INVENTORY_LOCATION_GROUPS.flatMap((group) => [...group.options])
 

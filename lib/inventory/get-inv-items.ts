@@ -6,7 +6,9 @@ export async function getInvItems(): Promise<InvItem[]> {
 
   const { data, error } = await supabase
     .from("inv_items")
-    .select("uuid, item, description, location, room, owner, image, quantity, notes")
+    .select(
+      "uuid, item, description, location, room, sub_location, shelf, owner, image, quantity, notes",
+    )
     .order("item", { ascending: true })
 
   if (error) {

@@ -4,6 +4,8 @@ export type InvItem = {
   description: string | null
   location: string
   room: string | null
+  sub_location: string | null
+  shelf: string | null
   owner: string
   image: string | null
   quantity: number
@@ -15,6 +17,8 @@ export type InvItemInput = {
   description?: string
   location: string
   room?: string
+  sub_location?: string
+  shelf?: string
   owner: string
   quantity: number
   notes?: string
